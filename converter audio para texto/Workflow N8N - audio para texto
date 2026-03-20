@@ -1,1 +1,347 @@
-
+{
+  "name": "transcrever-audio-texto",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b0f12bb7-5629-445b-8b4a-9df06ec5ef96",
+              "name": "instancia",
+              "value": "={{ $json.body.instance }}",
+              "type": "string"
+            },
+            {
+              "id": "0fd89846-1693-47b4-8389-3f41d37b1a17",
+              "name": "remotejid",
+              "value": "={{$json.body.data.key.remoteJid?.includes(\"@s.whatsapp\") ? $json.body.data.key.remoteJid : $json.body.data.key.remoteJidAlt}}",
+              "type": "string"
+            },
+            {
+              "id": "15ac4344-4453-4dd5-afa1-9a54247f6a04",
+              "name": "fromme",
+              "value": "={{ $json.body.data.key.fromMe }}",
+              "type": "string"
+            },
+            {
+              "id": "dac24acd-d279-4db0-953f-6b041da476c0",
+              "name": "pushname",
+              "value": "={{ $json.body.data.pushName }}",
+              "type": "string"
+            },
+            {
+              "id": "3df2887f-d32a-4bc1-8876-e1ac689474ce",
+              "name": "conversation",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "9d0a20e6-4b03-4e21-80e6-bd6dc5b8dcb3",
+              "name": "messagetype",
+              "value": "={{ $json.body.data.messageType }}",
+              "type": "string"
+            },
+            {
+              "id": "f6059855-a1a1-4762-a541-68d51d9774bb",
+              "name": "datetime",
+              "value": "={{ $json.body.date_time }}",
+              "type": "string"
+            },
+            {
+              "id": "d2298573-145d-4a44-a832-214d986f52cf",
+              "name": "server_url",
+              "value": "={{ $json.body.server_url }}",
+              "type": "string"
+            },
+            {
+              "id": "8484ebd9-9fd6-4e8a-83be-d9c2e20cc1e2",
+              "name": "apikey",
+              "value": "={{ $json.body.apikey }}",
+              "type": "string"
+            },
+            {
+              "id": "eec7a43a-5691-4d26-b330-098f2e60ffd0",
+              "name": "audioMessage",
+              "value": "={{ $json.body.data.message.audioMessage }}",
+              "type": "object"
+            },
+            {
+              "id": "f7a906b0-1cf4-4de5-a42b-6b42d3766d9f",
+              "name": "base64",
+              "value": "={{ $json.body.data.message.base64 }}",
+              "type": "string"
+            },
+            {
+              "id": "175e8cc6-733f-42c8-bd48-617ee52d7509",
+              "name": "message",
+              "value": "={{ $json.body.data.message.conversation }}",
+              "type": "string"
+            },
+            {
+              "id": "85718975-005f-4b8e-81d3-502cef353b91",
+              "name": "sessionId",
+              "value": "={{$json.body.data.key.remoteJid?.includes(\"@s.whatsapp\") ? $json.body.data.key.remoteJid : $json.body.data.key.remoteJidAlt}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -592,
+        96
+      ],
+      "id": "d2cab7d8-782d-49b9-bde6-cb85168e7b47",
+      "name": "Dados"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "[seu_path]",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -768,
+        96
+      ],
+      "id": "",
+      "name": "Webhook1",
+      "webhookId": ""
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "88d36c3d-c45b-41c4-8788-f714bd22370e",
+              "leftValue": "={{ $json.messagetype }}",
+              "rightValue": "audioMessage",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -384,
+        96
+      ],
+      "id": "1448bbe5-acb4-42de-8e83-c0c59a6c057c",
+      "name": "é audio?"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -48,
+        208
+      ],
+      "id": "dd3fda12-273a-478e-8cc3-7eae37d61fa9",
+      "name": "fim"
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "base64",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        32
+      ],
+      "id": "40261d27-41b8-4653-bba2-e6b79b6c7963",
+      "name": "Converter_audio"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/audio/transcriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "bearer "
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "model",
+              "value": "whisper-large-v3-turbo"
+            },
+            {
+              "name": "temperature",
+              "value": "0"
+            },
+            {
+              "name": "response_format",
+              "value": "verbose_json"
+            },
+            {
+              "name": "language",
+              "value": "pt"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "timestamp_granularities[]",
+              "value": "word"
+            }
+          ]
+        },
+        "options": {
+          "sendCredentialsOnCrossOriginRedirect": false
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        112,
+        0
+      ],
+      "id": "d3a7330d-47e8-46c8-a18e-6e9e35040538",
+      "name": "transcrever"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $('Dados').item.json.server_url }}/message/sendText/{{ $('Dados').item.json.instancia }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "={{ $('Dados').item.json.apikey }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "number",
+              "value": "={{ $('Dados').item.json.sessionId }}"
+            },
+            {
+              "name": "text",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "name": "quoted.key.id",
+              "value": "={{ $('Webhook1').item.json.body.data.key.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "7439757c-cb25-4cf7-986a-3e9ff0ab33f0",
+      "name": "Enviar_msg"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Dados": {
+      "main": [
+        [
+          {
+            "node": "é audio?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Dados",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "é audio?": {
+      "main": [
+        [
+          {
+            "node": "Converter_audio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "fim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Converter_audio": {
+      "main": [
+        [
+          {
+            "node": "transcrever",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "transcrever": {
+      "main": [
+        [
+          {
+            "node": "Enviar_msg",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "83e778b1-5db8-4d17-a09d-1365496f2eaf",
+  "id": "YP072cFZrgOFc1hL",
+  "tags": []
+}
